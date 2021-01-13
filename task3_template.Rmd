@@ -1,0 +1,89 @@
+---
+title: "Exploratory Data Analysis"
+author: "YOUR NAME"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:  
+    keep_md: true
+    toc: true
+    toc_float: true
+    fig_height: 6
+    fig_width: 12
+    fig_align: 'center'
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+## Reading Notes
+
+2 Key questions: Ask about variation and covariation
+
+Visualization is a good place to start. Categorical or quantitative?
+
+Consider geom_freqpoly for layered graphs
+
+Search for both  typical and unusual values
+
+## EDA Example
+
+The code below is an example of the EDA process using the `starwars` data from the `tidyverse` package. (Make sure you have the `tidyverse` package installed!)
+
+Run the code line-by-line and look at the output. Add a comment to each line of code that explains what it does/what insights it provides.
+
+```{r}
+library(tidyverse)
+# Adds the tidyverse library to use functions saved there.
+
+dim(starwars) #Gives the dimensions of starwars data
+colnames(starwars) #Gives the names of the columns of starwars
+
+head(starwars) #Shows you the first bit of data at the beginning of the tables
+glimpse(starwars) #Glimpse is like head but shows the data in a different format
+
+?starwars #Shows the help file about the starwars data
+
+starwars %>% count(species) #Pipes starwars data into the count function which counts the species
+
+mean(starwars$height) #gives the mean of the height column in the starwars data
+mean(starwars$height, na.rm = TRUE) #Ignores NA values to do the same as above in spite of NA's included.
+
+summary(starwars$height) #Shows a summary of commonly sought statistics about the starwars height vector
+
+cm_to_ft <- function(cm){
+  ft = cm / 30.48
+  return(ft)
+} #Creates a function that converts cm to ft
+
+starwars_2 <- starwars %>% mutate(height_ft = cm_to_ft(height)) #converts height of starwars characters to ft instead of cm and stors it in a new copy of the dataset. 
+
+dim(starwars_2) #Retrieves dimentions of starwars 2 data
+colnames(starwars_2) #Retrieves the column names of starwars 2 data
+
+summary(starwars_2$height_ft) #Shows a summary of the hight data in ft in star wars 2 data
+
+ggplot(starwars_2, aes(height_ft)) + 
+  geom_histogram() #creates a histogram of heights in feet from star wars 2 data
+
+starwars_2 %>% filter(height_ft == max(height_ft)) #filters the data for only the very tallest characters, including ties
+starwars_2 %>% filter(height_ft == max(height_ft, na.rm = TRUE)) #Does the same but accounts for NA's that would otherwise stop the function from running.
+
+# https://starwars.fandom.com/wiki/Yarael_Poof
+```
+
+## EDA Practice
+
+Continue exploring the `starwars` data to gain additional insights, using [R4DS: Chapter 7](https://r4ds.had.co.nz/exploratory-data-analysis.html) as a guide.
+
+It is ok if you don't understand the all code in Chapter 7. (That is what we'll be learning the next two weeks!) If writing your own code is a struggle, try the "copy, paste, and tweak" method.
+
+```{r}
+view(starwars)
+library(mosaic)
+favstats(mass/height ~ sex, data = starwars)
+#Here I wanted to compare mass and height for some correlation about density. I divided it by sex because men and women I might expect to have different values. Hermaphroditic characters seem to have very large mass compared to their height.
+
+hist(starwars$mass/starwars$height)
+#This histogram helps clarify, there are many characters in the lower range, while only a few at such a high range like the hermaphroditic characters, we can assume that outliers in density match the rare hermaphroditic character type.
+```
