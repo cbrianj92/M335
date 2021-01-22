@@ -1,0 +1,32 @@
+---
+title: "Task 6"
+author: "Cody Jenson"
+date: "1/21/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readr) #Adds the readr library
+library(ggplot2) #Adds the ggplot2 library
+
+rcw <- read_csv("https://byuistats.github.io/M335/data/rcw.csv", 
+                col_types = cols(Semester_Date = col_date(format = "%m/%d/%y"), 
+                                 Semester = col_factor(levels = c("Winter", "Spring", "Fall"))))
+# This creates a dataframe to be analyzed by downloading the data from the page indicated as a csv file
+head(rcw) # Quick preview of the data
+
+ggplot(data = rcw, 
+       mapping = aes(x = Semester_Date, 
+                     y = Count, 
+                     color = Department)) +
+  geom_line() +
+  geom_point()
+#Creates a graph, well actually 2 graphs layered over each other, one with dots and the other lines connecting those dots
+
+# I can see that math is consistently the highest but that had a pretty severe dip during 2017 in attendence that they are still recoving from.The lines tend to end in the same order they were in at the start too.
+
+ggplot(data = rcw, mapping = aes(x = Semester_Date, y = Count, group = Semester)) + geom_boxplot()
+```
+The first graph was pretty good, but to get some different insight you can look at this and be able to compare the spread a little better, although it looks to be fairly close, the most recent one there were no outliers, so that was distinct.
