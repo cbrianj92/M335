@@ -1,0 +1,67 @@
+---
+title: "Task 7"
+author: "Cody Jenson"
+date: "1/28/2021"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(bakeoff)
+library(mosaic)
+```
+
+Here is my commentary of the code asked for:
+
+```{r}
+
+only_first_last <- ratings %>% # creates a new dataset by manipulating ratings
+  group_by(series) %>% # puts the data in groups by season
+  slice(1, n()) %>% # cuts away every episodes except for the first and last episode
+  mutate(which_episode = ifelse(episode == 1, "First", "Last")) %>% # creates a new variable to rename the first and last episodes as characters rather than numbers.
+  ungroup() %>% 
+  mutate(series_f = as.factor(series)) # creates a new variable that is the same as series but in a factor form rather than a character form
+
+View(only_first_last) #looks at the data set in a new window
+
+ggplot(data = only_first_last, 
+       mapping = aes(x = which_episode, 
+                     y = viewers_7day, 
+                     group = series_f,
+                     color = series_f)) +
+  geom_line() +
+  geom_point(size = 5) #creates a line graph with points superimposed to compare viewship of first episodes vs last episodes.
+
+
+```
+
+Here is the graphic asked for
+
+```{r}
+R2 <- ratings %>%
+  group_by(series) %>%
+  filter(n() == 10)
+
+v <- mean(R2$viewers_7day ~ as.factor(R2$series))
+
+v2 <- c("Three 5.001", "Four 7.354", "Five 10.039", "Six 12.311", "Seven 13.563",
+        "Eight 9.017", "Nine 9.298")
+
+ggplot(data = R2, aes(x = episode, y = viewers_7day, group = series,
+                      color = as.factor(series))) +
+  geom_line() +
+  geom_point() + 
+  scale_color_discrete(name = "Series", labels = v2) +
+  ggtitle("Viewership by Season with Averages") +
+  xlab("Episode") +
+  ylab("Ratings (7 day)")
+
+```
+
+WE can see that the viewership increased with each season up until season 7, where it dropped off pretty dramatically. We also notice that every season experiences a spike for the final episode or sometimes two.
