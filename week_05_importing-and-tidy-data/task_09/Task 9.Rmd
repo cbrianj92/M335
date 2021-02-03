@@ -1,0 +1,45 @@
+---
+title: "Task 09"
+author: "Cody Jenson"
+date: "2/3/2021"
+output: 
+  html_document:
+      keep_md: yes
+      code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(readr)
+library(mosaic)
+dat <- read_rds(url("https://github.com/byuistats/data/blob/master/Dart_Expert_Dow_6month_anova/Dart_Expert_Dow_6month_anova.RDS?raw=true")) 
+```
+
+```{r}
+ggplot(dat) +
+  geom_point(aes(x = contest_period, y = value))
+```
+
+This is a simple plot that lays out the value of these stocks over this period, it appears that they are pretty random at first glance.
+
+```{r}
+stocks <- dat %>% 
+   separate(contest_period, into = c("month_beg", "month_year"),  sep = "-")  %>% 
+   separate(month_year, into = c("month_end", "year_end"), sep = -4) %>% 
+   select(-month_beg)
+```
+
+```{r}
+DJIA <- filter(stocks, stocks$variable == "DJIA")
+```
+
+
+
+
+
+
+
