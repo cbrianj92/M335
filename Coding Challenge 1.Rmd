@@ -1,0 +1,75 @@
+---
+title: "Coding Challenge 1"
+author: "Cody Jenson"
+date: "2/17/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# include packages and read in data
+library(tidyverse)
+library(downloader)
+library(readxl)
+
+temp <- tempfile(fileext = "xlsx")
+download("https://byuistats.github.io/M335/data/cpi_food_uk/cpiaverageprices201910.xlsx?raw=true",temp, mode = "wb")
+dat1 <- read_xlsx(temp) #October 2019
+dat1 <- filter(dat1, dat1$`CPI Average Prices 2019` != "NA")
+
+temp <- tempfile(fileext = "xlsx")
+download("https://byuistats.github.io/M335/data/cpi_food_uk/cpiaverageprices201911.xlsx?raw=true",temp, mode = "wb")
+dat2 <- read_xlsx(temp) #November 2019
+dat2 <- filter(dat2, dat2$`CPI Average Prices 2019` != "NA")
+
+temp <- tempfile(fileext = "xlsx")
+download("https://byuistats.github.io/M335/data/cpi_food_uk/cpiaverageprices201912.xlsx?raw=true",temp, mode = "wb")
+dat3 <- read_xlsx(temp) #December 2019
+dat3 <- filter(dat3, dat3$`CPI Average Prices 2019` != "NA")
+
+temp <- tempfile(fileext = "xlsx")
+download("https://byuistats.github.io/M335/data/cpi_food_uk/cpiaverageprices202001.xlsx?raw=true",temp, mode = "wb")
+dat4 <- read_xlsx(temp) #January 2020
+dat4 <- filter(dat4, dat4$`CPI Average Prices 2020` != "NA")
+
+temp <- tempfile(fileext = "xlsx")
+download("https://byuistats.github.io/M335/data/cpi_food_uk/cpiaverageprices202002.xlsx?raw=true",temp, mode = "wb") 
+dat5 <- read_xlsx(temp) #February 2020
+dat5 <- filter(dat5, dat5$`CPI Average Prices 2020` != "NA")
+
+temp <- tempfile(fileext = "xlsx")
+download("https://byuistats.github.io/M335/data/cpi_food_uk/cpiaverageprices202003.xlsx?raw=true",temp, mode = "wb")
+dat6 <- read_xlsx(temp) #March 2020
+dat6 <- filter(dat6, dat6$`CPI Average Prices 2020` != "NA")
+```
+
+Here we have loaded the data into 6 seperate data sets, and since the direct loading had a first row that showed as NA and didn't actually contain relevant information or actual observations, but was itself a summary we removed that row.
+
+```{r}
+sumdat <- data.frame(c(mean(dat1$...3), mean(dat2$...3), mean(dat3$...3), mean(dat4$...3), mean(dat5$...2), mean(dat6$...2)), c("October", "November", "December", "January", "February", "March"))
+
+means <- sumdat$c.mean.dat1....3...mean.dat2....3...mean.dat3....3...mean.dat4....3...
+months <- sumdat$c..October....November....December....January....February....March..
+
+sumdat <- data.frame(means, months, 1:6)
+sumdat$months <- as.factor(sumdat$months)
+```
+
+Here we create a data frame with the means and the months as described in the article.
+
+```{r}
+ggplot(sumdat) +
+  geom_point(aes(x = X1.6, y = means)) +
+  geom_line(aes(x = X1.6, y = means), linetype = "dashed") +
+  xlab("Time period") +
+  ylab("Average prices") +
+  ggtitle("CPI food price averages") +
+  theme_bw()
+  
+```
+
+Created the graph but I haven't been able to get the labels on the X axis correct, if I sort by month it arranges alphabetically, so I added a column and numbered them but I can't remember how to rename them manually, and I am out of time.
+
