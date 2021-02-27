@@ -1,0 +1,107 @@
+---
+title: "Task 12"
+author: "Cody Jenson"
+date: "2/25/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading and Exploring the Data
+
+```{r}
+library(devtools)
+library(ourworldindata)
+library(tidyverse)
+library(mosaic)
+library(ggrepel)
+```
+
+```{r Subsetting Data}
+fh <- financing_healthcare %>% 
+  filter(!is.na(child_mort)) %>%
+  filter(!is.na(continent))
+
+fh2 <- fh %>% 
+  filter(!is.na(health_exp_total)) %>%
+  select(c(year, country, continent, health_exp_total, child_mort))
+
+fh3 <- fh %>% 
+  filter(!is.na(gdp)) %>%
+  select(c(year, country, continent, gdp, child_mort))
+
+fh4 <- fh %>% 
+  filter(!is.na(health_exp_public)) %>%
+  filter(!is.na(health_exp_private)) %>%
+  select(c(year, country, continent, health_exp_public, health_exp_private, child_mort))
+fh4 <- fh4 %>%
+  mutate(more_public = (health_exp_public/health_exp_private) > 1)
+
+fh5 <- fh3 %>%
+  filter(continent == "Africa")
+```
+
+```{r fh2}
+ggplot(fh2) +
+  geom_point(aes(x = health_exp_total, y = child_mort, color = continent))
+```
+very clear correlation, not exaclty linear but very strong. Athough spending more than 2000 on healthcare really doesn't seem to have much of an effect, maybe up to 3000.
+```{r fh3 explore}
+ggplot(fh3) +
+  geom_point(aes(x = gdp, y = child_mort, color = continent))
+```
+We see a strong correlation, and we also see that there is some clear seperation in where continents line up. there are some african countries that are deviating pretty strongly though.
+```{r fh4 explore}
+ggplot(fh4) +
+  geom_point(aes(x = health_exp_public, y = child_mort)) +
+  geom_point(aes(x = health_exp_private, y = child_mort))
+```
+This graph is not helpful at all. Viewing the adjustments made to fh4, we see that the only instances with both of these to compare in the USA and private is higher in all cases.
+
+```{r fh5 gdp and Africa}
+ggplot(fh5, aes(x = gdp, y = child_mort, color = country)) + 
+  geom_point() +
+  geom_line() +
+  theme(legend.position = "none")
+
+favstats(fh5$gdp ~ fh5$country)
+
+fh5 %>%
+  filter(country == "Equatorial Guinea") %>%
+  ggplot(aes(x = year, y = gdp, color = country)) + 
+  geom_point() +
+  geom_line() +
+  theme(legend.position = "none")
+```
+
+
+## Visualization for Presentation
+
+```{r Data Organization}
+fh6 <- fh %>%
+  filter(year >= 1900) %>%
+  group_by(year, continent) %>%
+  summarise(child_mort = sum(child_mort))
+
+label_points <- fh6 %>%
+  group_by(continent) %>%
+  filter(row_number(desc(year)) == 1)
+  
+ggplot(fh6, aes(x = year, y = child_mort, color = continent)) + 
+  geom_point() +
+  geom_line() +
+  theme(panel.background = element_blank(),
+         plot.background = element_blank(),
+         legend.position = "none",
+         panel.grid.major.y = element_line(color = "grey88", linetype = "dashed"),
+         axis.title = element_blank()) +
+  geom_label_repel(data = label_points, aes(label = continent)) +
+  labs(title = "Declining Child Mortality Across Continents",
+       x = "Year")
+```
+
+The key here is that there is definitely a convergence of child mortality, while Europe have had low child mortality for a long time, everywhere else is dropping significant. Even Africa, where child mortality is the worst, is currently better than anywhere else except Oceana, were a year ago. We also see the most dramatic improvements in the higher mortality countries.
+
+
