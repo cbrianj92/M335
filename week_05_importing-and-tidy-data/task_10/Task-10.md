@@ -8,12 +8,31 @@ output:
       code_folding: hide
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+
+
+```r
+library(tidyverse)
 ```
 
-```{r}
-library(tidyverse)
+```
+## -- Attaching packages --------------------------------------------------------------------------- tidyverse 1.3.0 --
+```
+
+```
+## v ggplot2 3.3.2     v purrr   0.3.4
+## v tibble  3.0.2     v dplyr   1.0.0
+## v tidyr   1.1.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0
+```
+
+```
+## -- Conflicts ------------------------------------------------------------------------------ tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+```
+
+```r
 library(downloader)
 library(readxl)
 library(readr)
@@ -39,21 +58,62 @@ dat4 <- read_dta(temp)
 temp <- tempfile()
 download(url_csv, destfile = temp, mode = "wb")
 dat5 <- read_csv(temp)
+```
 
+```
+## Parsed with column specification:
+## cols(
+##   contest_period = col_character(),
+##   variable = col_character(),
+##   value = col_double()
+## )
+```
+
+```r
 all.equal(dat1, dat2, check.attributes = FALSE)
-all.equal(dat1, dat3, check.attributes = FALSE)
-all.equal(dat1, dat4, check.attributes = FALSE)
-all.equal(dat1, dat5, check.attributes = FALSE)
+```
 
+```
+## [1] TRUE
+```
+
+```r
+all.equal(dat1, dat3, check.attributes = FALSE)
+```
+
+```
+## [1] TRUE
+```
+
+```r
+all.equal(dat1, dat4, check.attributes = FALSE)
+```
+
+```
+## [1] TRUE
+```
+
+```r
+all.equal(dat1, dat5, check.attributes = FALSE)
+```
+
+```
+## [1] TRUE
+```
+
+```r
 # Saving the URL's as variables to plug in was and idea from Hunter Rogers
 ```
 
 
-```{r}
+
+```r
 ggplot(data=dat5, aes(x=variable, y=value)) +
   geom_boxplot() +
   geom_jitter() +
   geom_hline(aes(yintercept = mean(value)), color = "blue")
 ```
+
+![](Task-10_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 
